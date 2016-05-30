@@ -17,7 +17,7 @@ jewel-2.0.2-vac: jewel-2.0.2.o medium-vac.o pythia6425mod.o meix.o
 jewel-2.0.2-simple: jewel-2.0.2.o medium-simple.o pythia6425mod.o meix.o
 	$(FC) -o $@ -L$(LHAPDF_PATH) $^ -lLHAPDF
 
-jewel-2.0.2-vishnu: jewel-2.0.2.o medium-vishnu.o pythia6425mod.o meix.o
+jewel-2.0.2-vishnu: jewel-2.0.2.o Jetoutputh5.o medium-vishnu.o pythia6425mod.o meix.o
 	$(FC) -o $@ -L$(LHAPDF_PATH) $^ -lLHAPDF $(LIBSHDF) $(LDFLAGS)
 
 clean:
