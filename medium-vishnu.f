@@ -815,6 +815,9 @@ C--XVAL corresponds to z-coordinate
       ENDIF
       END
 
+C-- start of added code, which is copied from the simple jet reader
+C-- from VISHNU
+
       SUBROUTINE FRANKENJEWEL()
 
       USE HDF5 ! This module contains all necessary modules

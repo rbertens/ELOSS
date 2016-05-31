@@ -17,7 +17,7 @@ jewel-2.0.2-vac: jewel-2.0.2.o medium-vac.o pythia6425mod.o meix.o
 jewel-2.0.2-simple: jewel-2.0.2.o medium-simple.o pythia6425mod.o meix.o
 	$(FC) -o $@ -L$(LHAPDF_PATH) $^ -lLHAPDF
 
-#explicit targets to include the proper fortran moduels
+#explicit targets to include the proper fortran modules
 medium-vishnu.o: medium-vishnu.f 
 	gfortran -c -o medium-vishnu.o medium-vishnu.f $(CFLAGS)
 Jetoutputh5.o: Jetoutputh5.f
