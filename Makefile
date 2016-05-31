@@ -6,7 +6,7 @@ LHAPDF_PATH := /home/rbertens/Documents/CERN/alice/JEWEL/LHAPDF/inst/lib
 FC := gfortran
 
 # for vishnu
-LDFLAGS= -lm -lz -fno-align-commons -lz -lrt -ldl -lm
+LDFLAGS= -lm -fno-align-commons -lz -lrt -ldl -lm
 
 CFLAGS = -I/home/rbertens/Documents/CERN/alice/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/include
 INCLUDEDIR = -I/home/rbertens/Documents/CERN/alice/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/include
@@ -22,6 +22,8 @@ jewel-2.0.2-simple: jewel-2.0.2.o medium-simple.o pythia6425mod.o meix.o
 
 medium-vishnu.o: medium-vishnu.f 
 	gfortran -c -o medium-vishnu.o medium-vishnu.f -I/home/rbertens/Documents/CERN/alice/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/include/
+Jetoutputh5.o: Jetoutputh5.f
+	gfortran -c -o Jetoutputh5.o Jetoutputh5.f -I/home/rbertens/Documents/CERN/alice/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/include/ -fno-align-commons
 
 jewel-2.0.2-vishnu: jewel-2.0.2.o medium-vishnu.o Jetoutputh5.o pythia6425mod.o meix.o 
 	$(FC) -o $@ $^ $(LIBRARYDIR) -L$(LHAPDF_PATH) $(INCLUDEDIR) -lLHAPDF $(LIBRARIES) $(LDFLAGS)
