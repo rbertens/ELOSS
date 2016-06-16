@@ -99,6 +99,8 @@ C--local variables
 
 	nsim=init()
 C--event loop
+C--REDMER -- this is called for each event
+C----------- NSIM times
 	DO 100 J=1,NSIM
 	  call genevent(j)
  100	CONTINUE
@@ -135,6 +137,7 @@ C--finish
 
 	write(logfid,*)'cross section:',PARI(1),'mb'
 	write(logfid,*)'sum of event weights:',sumofweights-wdisc
+        write(logfid,*)'FRANKENJEWEL - beta version, use with care'
 
 	call printtime
 
@@ -495,6 +498,8 @@ C--number of lines in event record
 C--switch off pi0 decay
       MDCY(PYCOMP(111),1)=0
 C--initialisation call
+C-- REDMER -- this is the initialization
+C--           of the PYTHIA6 routines
 	 IF(COLLIDER.EQ.'EEJJ')THEN
 	  OFFSET=9
         CALL PYINIT('CMS','e+','e-',sqrts)
@@ -502,7 +507,7 @@ C--initialisation call
 	  OFFSET=8
         CALL PYINIT('CMS','p','p',sqrts)
        ENDIF
-  
+C--REDMER -- the next two functions i don't understand
 	CALL EIXINT
 	CALL INSUDAINT(EOVEST)
 

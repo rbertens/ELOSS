@@ -314,13 +314,16 @@ C--local variables
       DOUBLE PRECISION R,PYR,pmax,wt,tau,theta,phi,pi,p,ys,pz2,e2
       DATA PI/3.141592653589793d0/
 
+C-- REDMER -- here we check if quark of gluon is produced, i assume      
       R=PYR(0)
       IF(R.LT.(2.*12.*NF*D3/3.)/(2.*12.*NF*D3/3.+3.*16.*ZETA3/2.))THEN
          TYPE=2
       ELSE
          TYPE=21
       ENDIF
+C-- REDMER so ... ms is the debye mass divided by sqrt(2). why not ...      
       MS=GETMS(X,Y,Z,T)
+C-- REDMER pick the debye mass      
       MD=GETMD(X,Y,Z,T)
       TEMP=GETTEMP(X,Y,Z,T)
 	tau=sqrt(t**2-z**2)
@@ -345,9 +348,11 @@ C--local variables
        E=SQRT(PX**2+PY**2+PZ**2+MS**2)
        RETURN
       ENDIF
-
+C-- REDMER wha tis p ? 
  10	p = pyr(0)**0.3333333*pmax
+C-- REDMER total energy E, so p is momentum
 	E2 = sqrt(p**2+ms**2)
+C-- REDMER below some weight - this i don't understand      
 	if (type.eq.2) then
 	  wt = (exp(ms/temp)-1.)/(exp(E2/temp)-1.)
 	else
@@ -356,13 +361,15 @@ C--local variables
 	if (wt.gt.1.) write(logfid,*)'Error in getscatterer: weight = ',wt
 	if (wt.lt.0.) write(logfid,*)'Error in getscatterer: weight = ',wt
 	if (pyr(0).gt.wt) goto 10
-	phi = pyr(0)*2.*pi
+C-- REDMER here i guess we pick kinematic variables for the particle
+        phi = pyr(0)*2.*pi
 	theta = -acos(2.*pyr(0)-1.)+pi
 	px  = p*sin(theta)*cos(phi)
 	py  = p*sin(theta)*sin(phi)
 	pz2 = p*cos(theta)
 	E   = cosh(ys)*E2 + sinh(ys)*pz2
 	pz  = sinh(ys)*E2 + cosh(ys)*pz2
+C REDMER transverse boost
       END
 
 
@@ -435,7 +442,7 @@ C--factor to vary Debye mass
       END
 
 
-
+C -- REDMER is this the wiggly N ? 
       DOUBLE PRECISION FUNCTION GETNEFF(X3,Y3,Z3,T3)
       IMPLICIT NONE
       COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
@@ -452,13 +459,21 @@ C--   local variables
       DATA PI/3.141592653589793d0/
 	tau = sqrt(t3**2-z3**2)
 	cosheta = t3/tau
+C--REDMER GENEFF from hydro (density)
+C--       GETTEMP from hydro
       GETNEFF=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
      &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+C-- REDMER plot entropy density vs t^3
+
+
+
+
+
 	getneff = getneff/cosheta
       END
       
       
-
+CC-- REDMER GETTEMP from hdyro
       DOUBLE PRECISION FUNCTION GETTEMP(X4,Y4,Z4,T4)
       IMPLICIT NONE
 C--medium parameters
@@ -510,7 +525,7 @@ C--evolve temperature
       END
 
 
-
+C--REDMER max temp at Tau I (initial Tau)
       DOUBLE PRECISION FUNCTION GETTEMPMAX()
       IMPLICIT NONE
 C--medium parameters
@@ -529,7 +544,7 @@ C--function call
       END
 
 
-
+C--REDMER max debye mass at max temp
       DOUBLE PRECISION FUNCTION GETMDMAX()
       IMPLICIT NONE
 C--factor to vary Debye mass
@@ -541,7 +556,7 @@ C--factor to vary Debye mass
       END
 
 
-
+C--REDMER min debye mass at critial temp (freeze out)
       DOUBLE PRECISION FUNCTION GETMDMIN()
       IMPLICIT NONE
 C--medium parameters
@@ -563,7 +578,7 @@ C--factor to vary Debye mass
       END
 
 
-
+C-- REDMER ms - what is this ? 
       DOUBLE PRECISION FUNCTION GETMSMAX()
       IMPLICIT NONE
       DOUBLE PRECISION GETMDMAX,SQRT
@@ -571,7 +586,10 @@ C--factor to vary Debye mass
       END
 
 
-
+C--REDMER what do we do here exactly ? 
+C-- something extracted at the minimum debye mass
+C-- with the zeta function (see Marco's paper) and 
+C-- Nf 
 	DOUBLE PRECISION FUNCTION GETNATMDMIN()
 	IMPLICIT NONE
 C--medium parameters
@@ -621,7 +639,7 @@ C--function call
 	END
 
 
-
+C-- N eff max
       DOUBLE PRECISION FUNCTION GETNEFFMAX()
       IMPLICIT NONE
       COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
@@ -644,7 +662,9 @@ C--   local variables
       END
       
       
-
+C-- REDMER number of participating
+C-- nucleons ? sampled from the nuclear thickness functions
+C-- for both nucleons
       DOUBLE PRECISION FUNCTION NPART(XX1,YY1,XX2,YY2)
       IMPLICIT NONE
       COMMON/MEDPARAMINT/TAUI,TI,TC,D3,ZETA3,D,
@@ -661,7 +681,9 @@ C--local variables
       END
       
 
-
+C-- REDMER implementation of nuclear thickness function 
+C-- called in the previous function where the Npart is 
+C-- evaluated
       DOUBLE PRECISION FUNCTION NTHICK(X1,Y1)
       IMPLICIT NONE
 C--medium parameters
@@ -703,7 +725,7 @@ C--nuclear thickness function
       END
 
 
-
+C-- calculate Ta, assumedly this is the conventional Ta
       SUBROUTINE CALCTA()
       IMPLICIT NONE
 C--medium parameters
@@ -745,7 +767,11 @@ C--integrate along longitudinal line
       END
 
 
-
+C-- REDMER caluclate the cross section
+C-- this is called from MEDINIT, so once per run .. ? 
+C-- doesn't make much sense, wouldn't you want this
+C-- per event ? 
+C-- probably i jus tdon't undertsand this ..
       SUBROUTINE CALCXSECTION()
       IMPLICIT NONE
 C--medium parameters
