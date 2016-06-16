@@ -53,6 +53,22 @@ C++ that you include the source code of that other code when and as ++
 C++ the GNU GPL requires distribution of source code.               ++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
+      SUBROUTINE VISHNUINIT()
+C-- here we open the hydro file to extract the info
+C   and buffer it
+C   should be called once at start of medium
+C   initialization
+      USE HDF5
+      IMPLICIT NONE
+      CALL readHydroFiles_initialEZ("JetData.h5")
+      CALL outputPlaintxtHuichaoFormat()
+C-- then create and open a file for writing the VISHNU
+C   output
+
+      END
+
+
       SUBROUTINE MEDINIT(FILE,id,etam)
       IMPLICIT NONE
 C--medium parameters
@@ -197,7 +213,8 @@ C--calculate T_A(x,y)
       CALL CALCTA
 C--calculate geometrical cross section
       CALL CALCXSECTION
-
+C-- read the vishnu data (for now hardcoded filename)
+      CALL VISHNUINIT()
       END
 
 
@@ -455,14 +472,18 @@ C -- REDMER is this the wiggly N ?
       INTEGER A
       LOGICAL WOODSSAXON
 C--   local variables
-      DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETTEMP,tau,cosheta
+      DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETHYDROTEMP,tau,cosheta
       DATA PI/3.141592653589793d0/
 	tau = sqrt(t3**2-z3**2)
 	cosheta = t3/tau
-C--REDMER GENEFF from hydro (density)
+C--REDMER this is where we intervene
+C         rather than the density (neff) is a function of temperature
+C         at a given location and tau. 
+C         rather than taking the JEWEL estimate of the temperature,
+C         we'll use the hydro one 
 C--       GETTEMP from hydro
       GETNEFF=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
-     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+     &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
 C-- REDMER plot entropy density vs t^3
 
 
@@ -473,7 +494,6 @@ C-- REDMER plot entropy density vs t^3
       END
       
       
-CC-- REDMER GETTEMP from hdyro
       DOUBLE PRECISION FUNCTION GETTEMP(X4,Y4,Z4,T4)
       IMPLICIT NONE
 C--medium parameters
@@ -841,76 +861,116 @@ C--XVAL corresponds to z-coordinate
       ENDIF
       END
 
-C-- start of added code, which is copied from the simple jet reader
-C-- from VISHNU
+C-- start of added code, get temperature from VISHNU
+      DOUBLE PRECISION FUNCTION GETHYDROTEMP(X6,Y6,Z6,T6)
+      USE HDF5 ! load the HDF5 module, necessary to read hydro file
+      IMPLICIT NONE
+      DOUBLE PRECISION X6, Y6, Z6, T6
+C-- implicite double precision initialization of GETHYDROTEMP
+C-- extract the following params:
+C   e - energy density
+C   p - pressure
+C   s - entropy density
+C   T - temperature
+C   vx - velocity of the fluid cell in the x direction
+C   vy - velocity of the fluid cell in the y direction
 
-      SUBROUTINE FRANKENJEWEL()
-
-      USE HDF5 ! This module contains all necessary modules
-      Implicit none
-
-      Integer, parameter :: XL = -130
-      Integer, parameter :: XH = 130
-      Integer, parameter :: YL = -130
-      Integer, parameter :: YH = 130
+      DOUBLE PRECISION :: e, p, s, T, vx, vy
       
-      Integer, parameter :: LSX = 5
-      Integer, parameter :: LSY = 6
-      Integer, parameter :: LST = 2
+C-- get the temperature at some coordinate
+C-- input variables (first three) are
+C-- tau
+C-- x
+C-- y
+C-- so there is NO z dependence - how do we treat this ? 
+      CALL readHydroinfoBuffered_ideal(T6, X6, Y6,
+     &  e,p,s,T,vx,vy);
+C-- return value is variable that has the function name
+      GETHYDROTEMP=T 
+
+      END
+
+      DOUBLE PRECISION FUNCTION GETHYDROEPSILON(X6,Y6,Z6,T6)
+      USE HDF5 ! load the HDF5 module, necessary to read hydro file
+      IMPLICIT NONE
+      DOUBLE PRECISION X6, Y6, Z6, T6
+C-- implicite double precision initialization of GETHYDROTEMP
+C-- extract the following params:
+C   e - energy density
+C   p - pressure
+C   s - entropy density
+C   T - temperature
+C   vx - velocity of the fluid cell in the x direction
+C   vy - velocity of the fluid cell in the y direction
+
+      DOUBLE PRECISION :: e, p, s, T, vx, vy
       
-      double precision :: DX = 0.1
-      double precision :: DY = 0.1
-      double precision :: Tau0 = 0.6
-      double precision :: dTau = 0.02
-      integer :: Frame_id
-      Double precision, Dimension(XL:XH, YL:YH, 1:1):: Ed, Sd,
-     &                                         P, Temp, Vx, Vy
-      Double precision, Dimension(XL:XH, YL:YH, 1:1):: Pi00, Pi01,
-     &            Pi02, Pi03, Pi11, Pi12, Pi13, Pi22, Pi23, Pi33
-      Double precision, Dimension(XL:XH, YL:YH, 1:1):: BulkPi
+C-- get the temperature at some coordinate
+C-- input variables (first three) are
+C-- tau
+C-- x
+C-- y
+C-- so there is NO z dependence - how do we treat this ? 
+      CALL readHydroinfoBuffered_ideal(T6, X6, Y6,
+     &  e,p,s,T,vx,vy);
+C-- return value is variable that has the function name
+      GETHYDROEPSILON=e
 
-      double precision :: ee, pp, ss, TT, vxx, vyy, deltau
-      double precision :: jet_avglength, jet_avglength_in, 
-     &                    jet_avglength_out
+      END
+
+      DOUBLE PRECISION FUNCTION GETHYDROENTROPY(X6,Y6,Z6,T6)
+      USE HDF5 ! load the HDF5 module, necessary to read hydro file
+      IMPLICIT NONE
+      DOUBLE PRECISION X6, Y6, Z6, T6
+C-- implicite double precision initialization of GETHYDROTEMP
+C-- extract the following params:
+C   e - energy density
+C   p - pressure
+C   s - entropy density
+C   T - temperature
+C   vx - velocity of the fluid cell in the x direction
+C   vy - velocity of the fluid cell in the y direction
+
+      DOUBLE PRECISION :: e, p, s, T, vx, vy
       
-!      Ed = 10.4d0
-!      Sd = 1.0d0
-!      P = 0.0d0
-!      Temp = 1.0d0
-!      Vx = 1.0d0
-!      Vy = 0.5d0
-!      Pi00 = 0.0d0
-!      Pi01 = 0.0d0
-!      Pi02 = 0.0d0
-!      Pi03 = 0.0d0
-!      Pi11 = 0.0d0
-!      Pi12 = 0.0d0
-!      Pi13 = 0.0d0
-!      Pi22 = 0.0d0
-!      Pi23 = 0.0d0
-!      Pi33 = 0.0d0
-!      BulkPi = 0.0d0
-!      Call setHydroFiles(XL, XH, DX, LSX, YL, YH, DY, LSY, Tau0, dTau, 
-!     &                   LST)
-!      
-!      do Frame_id = 0, 10
-!         Call writeHydroBlock(Frame_id, Ed, Sd, P, Temp, Vx, Vy,
-!     &      Pi00, Pi01, Pi02, Pi03, Pi11, Pi12, Pi13, Pi22, Pi23, Pi33, 
-!     &      BulkPi)
-!      enddo
+C-- get the temperature at some coordinate
+C-- input variables (first three) are
+C-- tau
+C-- x
+C-- y
+C-- so there is NO z dependence - how do we treat this ? 
+      CALL readHydroinfoBuffered_ideal(T6, X6, Y6,
+     &  e,p,s,T,vx,vy);
+C-- return value is variable that has the function name
+      GETHYDROENTROPY=s
 
-      Call readHydroFiles_initialEZ("JetData.h5")
-      Call outputPlaintxtHuichaoFormat()
-      Call readHydroinfoBuffered_ideal(3.4d0, 2.5d0, -4.34d0, 
-     &  ee,pp,ss,TT,vxx,vyy);
-      write(*,*) TT
-      call getJetDeltaTauMax(0.0d0,0.0d0,1.0d0,0.0d0, 0.3d0, 0.05d0
-     &                       ,deltau)
-      write(*,*) deltau
-!      call getJetavgLength_shell(0.12d0, 10.0d0, jet_avglength, 
-!     &   jet_avglength_in, jet_avglength_out)
-!      write(*,*) jet_avglength, jet_avglength_in, jet_avglength_out
+      END
 
-      stop
-      end
+      DOUBLE PRECISION FUNCTION GETHYDROTEMPERATURE(X6,Y6,Z6,T6)
+      USE HDF5 ! load the HDF5 module, necessary to read hydro file
+      IMPLICIT NONE
+      DOUBLE PRECISION X6, Y6, Z6, T6
+C-- implicite double precision initialization of GETHYDROTEMP
+C-- extract the following params:
+C   e - energy density
+C   p - pressure
+C   s - entropy density
+C   T - temperature
+C   vx - velocity of the fluid cell in the x direction
+C   vy - velocity of the fluid cell in the y direction
+
+      DOUBLE PRECISION :: e, p, s, T, vx, vy
+      
+C-- get the temperature at some coordinate
+C-- input variables (first three) are
+C-- tau
+C-- x
+C-- y
+C-- so there is NO z dependence - how do we treat this ? 
+      CALL readHydroinfoBuffered_ideal(T6, X6, Y6,
+     &  e,p,s,T,vx,vy);
+C-- return value is variable that has the function name
+      GETHYDROTEMPERATURE=T
+
+      END
 

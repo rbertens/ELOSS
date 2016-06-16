@@ -75,8 +75,8 @@ C--Common block of Pythia
 	INTEGER MRPY
 	DOUBLE PRECISION RRPY
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--discard event flag
 	COMMON/DISC/NDISC,NSTRANGE,NGOOD,errcount,wdisc,DISCARD
 	LOGICAL DISCARD
@@ -142,6 +142,7 @@ C--finish
 	call printtime
 
 	close(logfid,status='keep')
+        close(vishnuid,status='keep')
 
 	END
 
@@ -240,8 +241,8 @@ C--event weight exponent
 	COMMON/WEXPO/WEIGHTEX
 	DOUBLE PRECISION WEIGHTEX
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--max rapidity
 	common/rapmax/etamax
 	double precision etamax
@@ -263,17 +264,20 @@ C--Variables local to this program
 	CHARACTER*2 SNSET
       CHARACTER*80 PDFFILE,XSECFILE,FILEMED,FILESPLIT,buffer,
      &label,value
-      CHARACTER*100 HEPMCFILE,LOGFILE,FILENAME2
+      CHARACTER*100 HEPMCFILE,LOGFILE,FILENAME2,VISHNUFILE
 	CHARACTER(LEN=100) filename
 	LOGICAL PDFEXIST,SPLITIEXIST,XSECEXIST,WEIGHTED
 
       HPMCFID = 4
 	logfid = 3
+      vishnuid = 5
+
 
 C--default settings
 	nsim = 10000
 	njob = 0
 	logfile = 'out.log'
+        vishnufile = 'vishnu.cvs'
 	hepmcfile = 'out.hepmc'
 	filesplit = 'splitint.dat'
 	pdffile = 'pdfs.dat'
@@ -328,6 +332,8 @@ C--default settings
             read(value,*,iostat=ios) njob
           elseif(label.eq."LOGFILE")then
             read(value,'(a)',iostat=ios) logfile
+          elseif(label.eq."VISHNUFILE")then
+            read(value,'(a)',iostat=ios) vishnufile
           elseif(label.eq."HEPMCFILE")then
             read(value,'(a)',iostat=ios) hepmcfile
           elseif(label.eq."SPLITINTFILE")then
@@ -395,6 +401,8 @@ C--default settings
 	OPEN(unit=logfid,file=LOGFILE,status='unknown')
 	MSTU(11)=logfid
 
+        OPEN(unit=vishnuid,file=VISHNUFILE,status='unknown')
+
 	call printtime
 	call printlogo(logfid)
 
@@ -404,6 +412,7 @@ C--default settings
 	write(logfid,*)'NEVENT       = ',nsim
 	write(logfid,*)'NJOB         = ',njob
 	write(logfid,*)'LOGFILE      = ',logfile
+        write(logfid,*)'VISHNUFILE   = ',vishnufile
 	write(logfid,*)'HEPMCFILE    = ',hepmcfile
 	write(logfid,*)'SPLITINTFILE = ',filesplit
 	write(logfid,*)'PDFFILE      = ',pdffile
@@ -651,8 +660,8 @@ C--Call PYR once for initialization
 	subroutine genevent(j)
 	implicit none
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 	INTEGER PYCOMP
 	INTEGER NMXHEP
 C--Common block of Pythia
@@ -1087,8 +1096,8 @@ C--write message to log-file
 	SUBROUTINE MAKESTRINGS(WHICH)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 	INTEGER WHICH
 	IF(WHICH.EQ.0)THEN
 	 CALL MAKESTRINGS_VAC
@@ -1106,8 +1115,8 @@ C--identifier of file for hepmc output and logfile
       SUBROUTINE MAKESTRINGS_VAC
       IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -1347,8 +1356,8 @@ C--local variables
       DATA MCUT/1.d8/
       DATA EADDEND/10.d0/
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--discard event flag
 	COMMON/DISC/NDISC,NSTRANGE,NGOOD,errcount,wdisc,DISCARD
 	LOGICAL DISCARD
@@ -1638,8 +1647,8 @@ C--event weight
 	COMMON/WEIGHT/EVWEIGHT,sumofweights
 	double precision EVWEIGHT,sumofweights
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--local variables
       INTEGER L,LINE,NOLD,TYPI,LINEOLD,LKINE,nendold
       DOUBLE PRECISION THETA,PHI,PYP,FORMTIME,STARTTIME,TLEFT,
@@ -1881,8 +1890,8 @@ C--do kinematics
 	SUBROUTINE MAKESPLITTING(L)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -2155,8 +2164,8 @@ C--take care of initial quark (or gluon)
 	SUBROUTINE MAKEINSPLIT(L,X,TSUM,VIRT,TYPI,TIME,TAURAD)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -2436,8 +2445,8 @@ C--variables for coherent scattering
 	INTEGER NSTART,NEND
 	DOUBLE PRECISION ALLQS,SCATCENTRES,QSUMVEC,QSUM2
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--local variables
 	INTEGER L,TYPI,COUNTER,COUNTMAX,COUNT2
 	DOUBLE PRECISION X,DELTAT,DELTAL,PYR,R,PNORAD,GETPNORAD1,GETNOSCAT,
@@ -2812,8 +2821,8 @@ C--exit in case of failure
      &		OVERQ0,Z,QQBAR)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -3077,8 +3086,8 @@ C--local variables
 	DOUBLE PRECISION FUNCTION GETPNORAD1(LINE,x,y,z,t)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -3145,8 +3154,8 @@ C--probability for no initial state radiation
 	SUBROUTINE GETQVEC(L,J,DT,X)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -3313,8 +3322,8 @@ C--transformation to lab
      &	TIME,X,Z,QQBAR)
       IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -3813,8 +3822,8 @@ C--local variables
      &                                                TYPE3,T2,INS)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -3868,8 +3877,8 @@ C--local variables
 	DOUBLE PRECISION FUNCTION GETINSUDAKOV(QB,QMAX1,TYPE3)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4009,8 +4018,8 @@ C--P(g->qq) integration
 	DOUBLE PRECISION FUNCTION GETSPLITI(QA,QB,ZETA,EB,TYPE1)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4239,8 +4248,8 @@ C--find boundaries for z integration
 	DOUBLE PRECISION FUNCTION GETPDF(X,Q,TYP)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--pdf common block
 	COMMON/PDFS/QINQX(2,1000),GINQX(2,1000),QINGX(2,1000),
      &GINGX(2,1000)
@@ -4335,8 +4344,8 @@ C--f_q^q
 	DOUBLE PRECISION FUNCTION GETPDFXINT(Q,TYP)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--pdf common block
 	COMMON/PDFS/QINQX(2,1000),GINQX(2,1000),QINGX(2,1000),
      &GINGX(2,1000)
@@ -4440,8 +4449,8 @@ C--local variables
 	DOUBLE PRECISION FUNCTION GETXSECINT(TM,MD,TYP2)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4549,8 +4558,8 @@ C--second gluon integral
 	DOUBLE PRECISION FUNCTION GETINSUDAFAST(Q1,Q2,TYP)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4583,8 +4592,8 @@ C--local variables
 	DOUBLE PRECISION FUNCTION GETINSUDARED(Q,TYP2)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4662,8 +4671,8 @@ C--local variables
      &	x,y,z,t,mode)
       IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Parameter common block
 	COMMON/PARAM/Q0,LPS,LQCD,LTIME,SCALEFACM,ANGORD,SCATRECOIL,
      &ALLHAD,compress,NF
@@ -4754,8 +4763,8 @@ C--local variables
      &                                   MAX2,INS,ZDEC,QQBARDEC)
 	IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--Common block of Pythia
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -5112,8 +5121,8 @@ C--local variables
       DOUBLE PRECISION FUNCTION EI(X)
       IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--exponential integral for negative arguments
       COMMON/EXPINT/EIXS(3,1000),VALMAX,NVAL
       INTEGER NVAL
@@ -5540,8 +5549,8 @@ C--now do the positive arguments
 	subroutine odeint(ystart,a,b,eps,h1,hmin,w1)
 	implicit none
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--local variables
 	integer nmax,nstep,w1
 	double precision ystart,a,b,eps,h1,hmin,x,h,y,dydx,
@@ -5579,8 +5588,8 @@ C--local variables
 	subroutine rkstepper(x,y,dydx,htest,hdid,hnew,yscale,eps,w1)
 	implicit none
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--local variables
 	integer w1
 	double precision x,y,dydx,htest,hdid,hnew,yscale,eps,
@@ -5648,8 +5657,8 @@ C--local variables
       LOGICAL FUNCTION GETDELTAT(LINE,TSTART,DTMAX1,DELTAT)
       IMPLICIT NONE
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--pythia common block
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
@@ -5900,8 +5909,8 @@ C--local variables
 	logical function compressevent(l1)
 	implicit none
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
 	DOUBLE PRECISION P,V
@@ -5988,8 +5997,8 @@ C--local variables
       SUBROUTINE PEVREC(NUM,COL)
 C--identifier of file for hepmc output and logfile
 	implicit none
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
       COMMON/PYJETS/N,NPAD,K(23000,5),P(23000,5),V(23000,5)
 	INTEGER N,NPAD,K
 	DOUBLE PRECISION P,V
@@ -6329,8 +6338,8 @@ C--partonic events
 	subroutine printtime
 	implicit none
 C--identifier of file for hepmc output and logfile
-	common/hepmcid/hpmcfid,logfid
-	integer hpmcfid,logfid
+	common/hepmcid/hpmcfid,logfid,vishnuid
+	integer hpmcfid,logfid,vishnuid
 C--local variables
 	integer*4 date(3),time(3)
 
