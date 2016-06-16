@@ -448,6 +448,7 @@ C--default settings
 
 C--initialize medium
       CALL MEDINIT(FILEMED,logfid,etamax)
+      CALL VISHNUINIT(vishnuid)
       CALL MEDNEXTEVT
 
 	OPEN(unit=HPMCFID,file=HEPMCFILE,status='unknown')
@@ -1081,11 +1082,14 @@ C--write message to log-file
  102  IF(NSIM.GT.100)THEN
        IF(MOD(J,NSIM/100).EQ.0)THEN
  	  write(logfid,*) 'done with event number ',J
+          write(vishnuid,*) 'done with event number ',J
  	 ENDIF
 	else
  	  write(logfid,*) 'done with event number ',J
-      ENDIF
+          write(vishnuid,*) 'done with event number ',J
+         ENDIF
 	call flush(logfid)
+        call flush(vishnuid)
 	end
 
 

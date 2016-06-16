@@ -54,18 +54,20 @@ C++ the GNU GPL requires distribution of source code.               ++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-      SUBROUTINE VISHNUINIT()
+      SUBROUTINE VISHNUINIT(id)
 C-- here we open the hydro file to extract the info
 C   and buffer it
 C   should be called once at start of medium
 C   initialization
       USE HDF5
       IMPLICIT NONE
+      COMMON/vishlog/vishnuid
+      INTEGER vishnuid
+      INTEGER id
       CALL readHydroFiles_initialEZ("JetData.h5")
       CALL outputPlaintxtHuichaoFormat()
-C-- then create and open a file for writing the VISHNU
-C   output
-
+      vishnuid=id
+      WRITE(vishnuid,'(A)')'INITIALIZED VISHNY HYDRO'
       END
 
 
@@ -214,7 +216,7 @@ C--calculate T_A(x,y)
 C--calculate geometrical cross section
       CALL CALCXSECTION
 C-- read the vishnu data (for now hardcoded filename)
-      CALL VISHNUINIT()
+      CALL VISHNUINIT(5)
       END
 
 
@@ -471,8 +473,11 @@ C -- REDMER is this the wiggly N ?
      &SIGMANN
       INTEGER A
       LOGICAL WOODSSAXON
+      COMMON/vishlog/vishnuid
+      INTEGER vishnuid
 C--   local variables
       DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETHYDROTEMP,tau,cosheta
+      DOUBLE PRECISION GETTEMP, GETHYDROENTROPY, GETHYDROEPSILON
       DATA PI/3.141592653589793d0/
 	tau = sqrt(t3**2-z3**2)
 	cosheta = t3/tau
@@ -485,10 +490,17 @@ C--       GETTEMP from hydro
       GETNEFF=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
      &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
 C-- REDMER plot entropy density vs t^3
+C   to do so, get the common block that holds the ID of the output
+C   file, and then write the variables to the output file
+      write(vishnuid,*)'x= ',X3
+      write(vishnuid,*)'y= ',Y3
+      write(vishnuid,*)'z= ',Z3
+      write(vishnuid,*)'t= ',T3
 
-
-
-
+      write(vishnuid,*)'JEWELTEMP',GETTEMP(X3,Y3,Z3,T3)
+      write(vishnuid,*)'GETHYDROTEMP',GETHYDROTEMP(X3,Y3,Z3,T3)
+      write(vishnuid,*)'GETHYDROEPSILON',GETHYDROEPSILON(X3,Y3,Z3,T3)
+      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
 
 	getneff = getneff/cosheta
       END
@@ -945,32 +957,3 @@ C-- return value is variable that has the function name
       GETHYDROENTROPY=s
 
       END
-
-      DOUBLE PRECISION FUNCTION GETHYDROTEMPERATURE(X6,Y6,Z6,T6)
-      USE HDF5 ! load the HDF5 module, necessary to read hydro file
-      IMPLICIT NONE
-      DOUBLE PRECISION X6, Y6, Z6, T6
-C-- implicite double precision initialization of GETHYDROTEMP
-C-- extract the following params:
-C   e - energy density
-C   p - pressure
-C   s - entropy density
-C   T - temperature
-C   vx - velocity of the fluid cell in the x direction
-C   vy - velocity of the fluid cell in the y direction
-
-      DOUBLE PRECISION :: e, p, s, T, vx, vy
-      
-C-- get the temperature at some coordinate
-C-- input variables (first three) are
-C-- tau
-C-- x
-C-- y
-C-- so there is NO z dependence - how do we treat this ? 
-      CALL readHydroinfoBuffered_ideal(T6, X6, Y6,
-     &  e,p,s,T,vx,vy);
-C-- return value is variable that has the function name
-      GETHYDROTEMPERATURE=T
-
-      END
-
