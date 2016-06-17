@@ -28,6 +28,7 @@ clean:
 #make destroy to clean out working dir for git pushes
 destroy:
 	rm -f medium-*.o 
+	rm -f vishnu-*.o
 	rm -f jewel*.o
 	rm -f pythia6425mod.o meix.o Jetoutputh5.o
 	rm -f jewel-2.0.2-simple jewel-2.0.2-vac jewel-2.0.2-vishnu
