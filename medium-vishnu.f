@@ -67,7 +67,7 @@ C   initialization
       CALL readHydroFiles_initialEZ("JetData.h5")
       CALL outputPlaintxtHuichaoFormat()
       vishnuid=id
-      WRITE(vishnuid,'(A)')'INITIALIZED VISHNY HYDRO'
+      WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
       END
 
 
@@ -478,6 +478,7 @@ C -- REDMER is this the wiggly N ?
 C--   local variables
       DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETHYDROTEMP,tau,cosheta
       DOUBLE PRECISION GETTEMP, GETHYDROENTROPY, GETHYDROEPSILON
+      DOUBLE PRECISION GETNEFFJEWEL
       DATA PI/3.141592653589793d0/
 	tau = sqrt(t3**2-z3**2)
 	cosheta = t3/tau
@@ -504,11 +505,15 @@ C      write(vishnuid,*)'GETHYDROTEMP',GETHYDROTEMP(X3,Y3,Z3,T3)
 C      write(vishnuid,*)'GETHYDROEPSILON',GETHYDROEPSILON(X3,Y3,Z3,T3)
 C      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
 
+	getneff = getneff/cosheta
+      GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
+     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+      GETNEFFJEWEL = GETNEFFJEWEL/cosheta
+
       write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
      &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
-     &GETHYDROENTROPY(X3,Y3,Z3,T3)
+     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
 
-	getneff = getneff/cosheta
       END
       
       

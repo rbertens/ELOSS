@@ -12,7 +12,7 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
    } else printf("    - file seems OK \n");
 
    // initialize some variables
-   Double_t x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy;
+   Double_t x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy,hydroneff,jewelneff;
    Int_t nlines = 0;
 
    // open a file for writing the output tuple
@@ -20,7 +20,7 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
    if(!f->IsZombie()) printf("    - opened %s for writing \n", outputfile);
 
    // aaaaaaand create the tuple
-   TNtuple *ntuple = new TNtuple("ntuple","data from ascii file","x:y:z:tau:jeweltemp:hydrotemp:hydroepsilon:hydroentropy");
+   TNtuple *ntuple = new TNtuple("ntuple","data from ascii file","x:y:z:tau:jeweltemp:hydrotemp:hydroepsilon:hydroentropy:hydroneff:jewelneff");
 
    // first digest the header 
    char header[256];
@@ -36,9 +36,9 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
       if (!in.good()) break;
       if (nlines < 5) {
           cout << "    - printing first lines as sanity check" << endl;
-          printf("x=%.4f, y=%.4f, z=%.4f, tau=%.4f, jt=%.f, ht=%.4f, he=%.4f, hs=%.4f  \n",x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy);
+          printf("x=%.4f, y=%.4f, z=%.4f, tau=%.4f, jt=%.f, ht=%.4f, he=%.4f, hs=%.4f, hne=%.4f, jne=%.4f  \n",x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy,hydroneff,jewelneff);
       }
-      ntuple->Fill(x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroepsilon);
+      ntuple->Fill(x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy,hydroneff,jewelneff);
       nlines++;
    }
    printf("\n .. digested  %d points -- \n",nlines);
