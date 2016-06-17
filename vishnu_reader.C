@@ -1,30 +1,50 @@
 #include "Riostream.h"
 
-void vishnu_reader() {
+void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile = "vishnu.root") {
     // simple reader to covert the contents of the output file
     // to a ttree
-   TString dir = gSystem->UnixPathName(gInterpreter->GetCurrentMacroName());
-   dir.ReplaceAll("vishnu_reader.C","");
-   dir.ReplaceAll("/./","/");
    ifstream in;
-   in.open(Form("%sbasic.dat",dir.Data()));
+   in.open(filename);
+   printf("\n .. attempting to open %s for reading .. \n" ,filename);
+   if(!in.good()) {
+       printf(" something went wrong, cannot open %s ! \n", filename);
+       return;
+   } else printf("    - file seems OK \n");
 
-   Float_t x,y,z;
+   // initialize some variables
+   Double_t x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy;
    Int_t nlines = 0;
-   TFile *f = new TFile("basic.root","RECREATE");
-   TNtuple *ntuple = new TNtuple("ntuple","data from ascii file","x:y:z");
 
-   while (1) {
-      in >> x >> y >> z;
+   // open a file for writing the output tuple
+   TFile *f = new TFile(outputfile,"RECREATE");
+   if(!f->IsZombie()) printf("    - opened %s for writing \n", outputfile);
+
+   // aaaaaaand crate the tuple
+   TNtuple *ntuple = new TNtuple("ntuple","data from ascii file","x:y:z:tau:jeweltemp:hydrotemp:hydroepsilon:hydroentropy");
+
+   // first digest the header 
+   char header[256];
+   in.getline(header,256);
+   printf("\n .. digesting header ..  \n     - %s\n",header);
+   in.getline(header,256);
+   printf("     - %s\n",header);
+
+
+   printf("\n .. and now for the actual work .. \n");
+   while (true) {
+      in >> x >> y >> z >> tau >> jeweltemp >> hydrotemp >> hydroepsilon >> hydroentropy;
       if (!in.good()) break;
-      cout << " digesting info in the form of" << endl;
-      if (nlines < 5) printf("x=%8f, y=%8f, z=%8f\n",x,y,z);
-      ntuple->Fill(x,y,z);
+      if (nlines < 5) {
+          cout << "    - printing first lines as sanity check" << endl;
+          printf("x=%.4f, y=%.4f, z=%.4f, tau=%.4f, jt=%.f, ht=%.4f, he=%.4f, hs=%.4f  \n",x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy);
+      }
+      ntuple->Fill(x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroepsilon);
       nlines++;
    }
-   printf(" -- digested  %d points -- \n",nlines);
+   printf("\n .. digested  %d points -- \n",nlines);
 
    in.close();
 
    f->Write();
+   printf("\n -- %s has been closed, have fun \n\n", outputfile);
 }
