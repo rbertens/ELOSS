@@ -19,7 +19,7 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
    TFile *f = new TFile(outputfile,"RECREATE");
    if(!f->IsZombie()) printf("    - opened %s for writing \n", outputfile);
 
-   // aaaaaaand crate the tuple
+   // aaaaaaand create the tuple
    TNtuple *ntuple = new TNtuple("ntuple","data from ascii file","x:y:z:tau:jeweltemp:hydrotemp:hydroepsilon:hydroentropy");
 
    // first digest the header 

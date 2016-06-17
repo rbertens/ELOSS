@@ -323,7 +323,7 @@ C--longitudinal boost of momentum distribution
 	common/boostmed/boost
 	logical boost
 C--function calls
-      DOUBLE PRECISION GETTEMP,GETMD,GETMOM,GETMS
+      DOUBLE PRECISION GETHYDROTEMP,GETMD,GETMOM,GETMS
 C--identifier of log file
 	common/logfile/logfid
 	integer logfid
@@ -344,7 +344,7 @@ C-- REDMER so ... ms is the debye mass divided by sqrt(2). why not ...
       MS=GETMS(X,Y,Z,T)
 C-- REDMER pick the debye mass      
       MD=GETMD(X,Y,Z,T)
-      TEMP=GETTEMP(X,Y,Z,T)
+      TEMP=GETHYDROTEMP(X,Y,Z,T)
 	tau=sqrt(t**2-z**2)
 	if (boost) then
   	  ys = 0.5*log((t+z)/(t-z))
@@ -447,8 +447,8 @@ C--local variables
 C--factor to vary Debye mass
 	COMMON/MDFAC/MDFACTOR,MDSCALEFAC
 	DOUBLE PRECISION MDFACTOR,MDSCALEFAC
-      DOUBLE PRECISION X1,Y1,Z1,T1,GETTEMP
-      GETMD=MDSCALEFAC*3.*GETTEMP(X1,Y1,Z1,T1)
+      DOUBLE PRECISION X1,Y1,Z1,T1,GETHYDROTEMP
+      GETMD=MDSCALEFAC*3.*GETHYDROTEMP(X1,Y1,Z1,T1)
       GETMD=MAX(GETMD,MDFACTOR)
       END
 
@@ -577,8 +577,8 @@ C--medium parameters
       INTEGER A
       LOGICAL WOODSSAXON
 C--function call
-      DOUBLE PRECISION GETTEMP
-      GETTEMPMAX=GETTEMP(0.D0,0.D0,0.D0,TAUI)
+      DOUBLE PRECISION GETHYDROTEMP
+      GETTEMPMAX=GETHYDROTEMP(0.D0,0.D0,0.D0,TAUI)
       END
 
 
