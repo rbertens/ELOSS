@@ -492,15 +492,21 @@ C--       GETTEMP from hydro
 C-- REDMER plot entropy density vs t^3
 C   to do so, get the common block that holds the ID of the output
 C   file, and then write the variables to the output file
-      write(vishnuid,*)'x= ',X3
-      write(vishnuid,*)'y= ',Y3
-      write(vishnuid,*)'z= ',Z3
-      write(vishnuid,*)'t= ',T3
+C   it is written in a terribly unclear way (i.e just a blob
+C   of numbers) because like this we can easily read it into a TTREE
+C      write(vishnuid,*)'x= ',X3
+C      write(vishnuid,*)'y= ',Y3
+C      write(vishnuid,*)'z= ',Z3
+C      write(vishnuid,*)'t= ',T3
 
-      write(vishnuid,*)'JEWELTEMP',GETTEMP(X3,Y3,Z3,T3)
-      write(vishnuid,*)'GETHYDROTEMP',GETHYDROTEMP(X3,Y3,Z3,T3)
-      write(vishnuid,*)'GETHYDROEPSILON',GETHYDROEPSILON(X3,Y3,Z3,T3)
-      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
+C      write(vishnuid,*)'JEWELTEMP',GETTEMP(X3,Y3,Z3,T3)
+C      write(vishnuid,*)'GETHYDROTEMP',GETHYDROTEMP(X3,Y3,Z3,T3)
+C      write(vishnuid,*)'GETHYDROEPSILON',GETHYDROEPSILON(X3,Y3,Z3,T3)
+C      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
+
+      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
+     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
+     &GETHYDROENTROPY(X3,Y3,Z3,T3)
 
 	getneff = getneff/cosheta
       END
