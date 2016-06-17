@@ -32,7 +32,7 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
 
    printf("\n .. and now for the actual work .. \n");
    while (true) {
-      in >> x >> y >> z >> tau >> jeweltemp >> hydrotemp >> hydroepsilon >> hydroentropy;
+      in >> x >> y >> z >> tau >> jeweltemp >> hydrotemp >> hydroepsilon >> hydroentropy >> hydroneff >> jewelneff;
       if (!in.good()) break;
       if (nlines < 5) {
           cout << "    - printing first lines as sanity check" << endl;
