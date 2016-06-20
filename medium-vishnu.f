@@ -60,14 +60,40 @@ C   and buffer it
 C   should be called once at start of medium
 C   initialization
       USE HDF5
-      IMPLICIT NONE
       COMMON/vishlog/vishnuid
       INTEGER vishnuid
       INTEGER id
+      DOUBLE PRECISION  X,Y,T,GETNEFF
+      DOUBLE PRECISION GETNEFFJEWEL
       CALL readHydroFiles_initialEZ("JetData.h5")
       CALL outputPlaintxtHuichaoFormat()
       vishnuid=id
       WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
+      
+C-- we also want to just go through the x y profile of the
+C   medium, to get a sense of its makeup
+
+      OPEN(unit=6,file='vishnu_profile.csv',status='unknown')
+      write(6,'(A)')'scanning hydro cells - x y t neff neffjewel'
+
+C-- make a nested loop over x and y, and store the neff and
+C-- jewel neff in a grid of cell width .1
+      DO K = 1,51,1
+          X = -25.
+          DO I=1,51,1
+              Y = -25.
+              DO J=1,51,1
+                     write(6,*)X,Y,T,GETNEFF(X,Y,0d0,T),
+     &GETNEFFJEWEL(X,Y,0d0,T)
+                     T = K/1.
+                  Y = Y + 1.
+              END DO
+              X = X + 1.
+          END DO
+      END DO
+C--   close file for writing
+      CLOSE(6,status='keep')
+
       END
 
 
@@ -460,7 +486,6 @@ C--factor to vary Debye mass
       GETMS=GETMD(X2,Y2,Z2,T2)/SQRT(2.)
       END
 
-
 C -- REDMER is this the wiggly N ? 
       DOUBLE PRECISION FUNCTION GETNEFF(X3,Y3,Z3,T3)
       IMPLICIT NONE
@@ -514,6 +539,30 @@ C      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
      &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
      &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
 
+      END
+ 
+C -- REDMER is this the wiggly N ? 
+      DOUBLE PRECISION FUNCTION GETNEFFJEWEL(X3,Y3,Z3,T3)
+      IMPLICIT NONE
+      COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
+      INTEGER NF
+      DOUBLE PRECISION CENTRMIN,CENTRMAX,BREAL,CENTR,RAU
+      COMMON/MEDPARAMINT/TAUI,TI,TC,D3,ZETA3,D,
+     &N0,SIGMANN,A,WOODSSAXON
+      DOUBLE PRECISION TAUI,TI,TC,ALPHA,BETA,GAMMA,D3,ZETA3,D,N0,
+     &SIGMANN
+      INTEGER A
+      LOGICAL WOODSSAXON
+      COMMON/vishlog/vishnuid
+      INTEGER vishnuid
+C--   local variables
+      DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETTEMP,tau,cosheta
+      DATA PI/3.141592653589793d0/
+	tau = sqrt(t3**2-z3**2)
+	cosheta = t3/tau
+      GETNEFFJEWEL=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
+     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+	getneffjewel = getneffjewel/cosheta
       END
       
       
