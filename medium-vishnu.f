@@ -63,10 +63,9 @@ C   initialization
       COMMON/vishlog/vishnuid
       INTEGER vishnuid
       INTEGER id
-      DOUBLE PRECISION  X,Y,T,GETNEFF
+      DOUBLE PRECISION  X,Y,T,GETNEFFQUIET
       DOUBLE PRECISION GETNEFFJEWEL
       CALL readHydroFiles_initialEZ("JetData.h5")
-      CALL outputPlaintxtHuichaoFormat()
       vishnuid=id
       WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
       
@@ -83,7 +82,7 @@ C-- jewel neff in a grid of cell width .1
           DO I=1,201,1
               Y = -10.
               DO J=1,202,1
-                     write(6,*)X,Y,T,GETNEFF(X,Y,0d0,T),
+                     write(6,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
      &GETNEFFJEWEL(X,Y,0d0,T)
                      T = K/1.
                   Y = Y + .1
@@ -486,7 +485,39 @@ C--factor to vary Debye mass
       GETMS=GETMD(X2,Y2,Z2,T2)/SQRT(2.)
       END
 
-C -- REDMER is this the wiggly N ? 
+      DOUBLE PRECISION FUNCTION GETNEFFQUIET(X3,Y3,Z3,T3)
+      IMPLICIT NONE
+      COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
+      INTEGER NF
+      DOUBLE PRECISION CENTRMIN,CENTRMAX,BREAL,CENTR,RAU
+      COMMON/MEDPARAMINT/TAUI,TI,TC,D3,ZETA3,D,
+     &N0,SIGMANN,A,WOODSSAXON
+      DOUBLE PRECISION TAUI,TI,TC,ALPHA,BETA,GAMMA,D3,ZETA3,D,N0,
+     &SIGMANN
+      INTEGER A
+      LOGICAL WOODSSAXON
+      COMMON/vishlog/vishnuid
+      INTEGER vishnuid
+C--   local variables
+      DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETHYDROTEMP,tau,cosheta
+      DATA PI/3.141592653589793d0/
+	tau = sqrt(t3**2-z3**2)
+	cosheta = t3/tau
+C--REDMER this is where we intervene
+C         rather than the density (neff) is a function of temperature
+C         at a given location and tau. 
+C         rather than taking the JEWEL estimate of the temperature,
+C         we'll use the hydro one 
+C--       GETTEMP from hydro
+      GETNEFFQUIET=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
+     &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
+
+	getneffquiet = getneffquiet/cosheta
+      END
+
+C -- REDMER effedctive density Neff
+C -- this function should be merged with the quiet flavor
+C -- so that it just write the output of that 
       DOUBLE PRECISION FUNCTION GETNEFF(X3,Y3,Z3,T3)
       IMPLICIT NONE
       COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
@@ -515,20 +546,6 @@ C         we'll use the hydro one
 C--       GETTEMP from hydro
       GETNEFF=(2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
      &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
-C-- REDMER plot entropy density vs t^3
-C   to do so, get the common block that holds the ID of the output
-C   file, and then write the variables to the output file
-C   it is written in a terribly unclear way (i.e just a blob
-C   of numbers) because like this we can easily read it into a TTREE
-C      write(vishnuid,*)'x= ',X3
-C      write(vishnuid,*)'y= ',Y3
-C      write(vishnuid,*)'z= ',Z3
-C      write(vishnuid,*)'t= ',T3
-
-C      write(vishnuid,*)'JEWELTEMP',GETTEMP(X3,Y3,Z3,T3)
-C      write(vishnuid,*)'GETHYDROTEMP',GETHYDROTEMP(X3,Y3,Z3,T3)
-C      write(vishnuid,*)'GETHYDROEPSILON',GETHYDROEPSILON(X3,Y3,Z3,T3)
-C      write(vishnuid,*)'GETHYDROENTROPY',GETHYDROENTROPY(X3,Y3,Z3,T3)
 
 	getneff = getneff/cosheta
       GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
@@ -936,8 +953,12 @@ C--XVAL corresponds to z-coordinate
 C-- start of added code, get temperature from VISHNU
       DOUBLE PRECISION FUNCTION GETHYDROTEMP(X6,Y6,Z6,T6)
       USE HDF5 ! load the HDF5 module, necessary to read hydro file
-      IMPLICIT NONE
       DOUBLE PRECISION X6, Y6, Z6, T6
+      COMMON/MEDPARAMINT/TAUI,TI,TC,D3,ZETA3,D,
+     &N0,SIGMANN,A,WOODSSAXON
+      DOUBLE PRECISION TAUI,TI,TC,ALPHA,BETA,GAMMA,D3,ZETA3,D,N0,
+     &SIGMANN
+
 C-- implicite double precision initialization of GETHYDROTEMP
 C-- extract the following params:
 C   e - energy density
@@ -959,6 +980,10 @@ C-- so there is NO z dependence - how do we treat this ?
      &  e,p,s,T,vx,vy);
 C-- return value is variable that has the function name
       GETHYDROTEMP=T 
+
+C-- if the temperature is lower than the critical temperature
+C-- , set it to 0 
+      IF(GETHYDROTEMP.LT.TC) GETHYDROTEMP=0.d0
 
       END
 
