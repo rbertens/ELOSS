@@ -78,17 +78,17 @@ C   medium, to get a sense of its makeup
 
 C-- make a nested loop over x and y, and store the neff and
 C-- jewel neff in a grid of cell width .1
-      DO K = 1,51,1
-          X = -25.
-          DO I=1,51,1
-              Y = -25.
-              DO J=1,51,1
+      DO K = 1,15,1
+          X = -10.
+          DO I=1,201,1
+              Y = -10.
+              DO J=1,202,1
                      write(6,*)X,Y,T,GETNEFF(X,Y,0d0,T),
      &GETNEFFJEWEL(X,Y,0d0,T)
                      T = K/1.
-                  Y = Y + 1.
+                  Y = Y + .1
               END DO
-              X = X + 1.
+              X = X + .1
           END DO
       END DO
 C--   close file for writing

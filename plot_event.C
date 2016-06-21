@@ -1,8 +1,8 @@
 #include "Riostream.h"
 
-void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile = "vishnu.root") {
+void plot_event(const char* filename = "vishnu_profile.csv", const char* outputfile = "vishnu_profile.root") {
     // simple reader to covert the contents of the output file
-    // to a ttree
+    // into histograms
    ifstream in;
    in.open(filename);
    printf("\n .. attempting to open %s for reading .. \n" ,filename);
@@ -20,25 +20,39 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
    if(!f->IsZombie()) printf("    - opened %s for writing \n", outputfile);
 
    // aaaaaaand create the tuple
-   TNtupleD *ntuple = new TNtupleD("ntuple","data from ascii file","x:y:z:tau:jeweltemp:hydrotemp:hydroepsilon:hydroentropy:hydroneff:jewelneff");
+   TH2D* jewel[15];
+   TH2D* hydro[15];
+   for(int i = 0; i < 15; i++) {
+      jewel[i] = new TH2D(Form("neff_jewel_tau=%i", i), Form("N_{eff, jewel}, #tau = %i", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
+      hydro[i] = new TH2D(Form("neff_hydro_tau=%i", i), Form("N_{eff, hydro}, #tau = %i", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
+
+      jewel[i]->GetXaxis()->SetTitle("x (fm)");
+      jewel[i]->GetYaxis()->SetTitle("y (fm)");
+//      jewel[i]->GetZaxis()->SetRangeUser(0., 15.);
+
+      hydro[i]->GetXaxis()->SetTitle("x (fm)");
+      hydro[i]->GetYaxis()->SetTitle("y (fm)");
+//      hydro[i]->GetZaxis()->SetRangeUser(0., 15.);
+
+   }
 
    // first digest the header 
    char header[256];
    in.getline(header,256);
    printf("\n .. digesting header ..  \n     - %s\n",header);
-   in.getline(header,256);
-   printf("     - %s\n",header);
-
 
    printf("\n .. and now for the actual work .. \n");
    while (true) {
-      in >> x >> y >> z >> tau >> jeweltemp >> hydrotemp >> hydroepsilon >> hydroentropy >> hydroneff >> jewelneff;
+      in >> x >> y >> tau >> hydroneff >> jewelneff;
       if (!in.good()) break;
       if (nlines < 5) {
           cout << "    - printing first lines as sanity check" << endl;
-          printf("x=%.4f, y=%.4f, z=%.4f, tau=%.4f, jt=%.f, ht=%.4f, he=%.4f, hs=%.4f, hne=%.4f, jne=%.4f  \n",x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy,hydroneff,jewelneff);
+          printf("x=%.4f, y=%.4f, z=%.4f, tau=%.4f, hne=%.4f, jne=%.4f  \n",x,y,z,tau,hydroneff,jewelneff);
       }
-      ntuple->Fill(x,y,z,tau,jeweltemp,hydrotemp,hydroepsilon,hydroentropy,hydroneff,jewelneff);
+      if(tau >= 0 && tau < 15) {
+          jewel[int(tau)]->Fill(x,y,jewelneff);
+          hydro[int(tau)]->Fill(x,y,hydroneff);
+      }
       nlines++;
    }
    printf("\n .. digested  %d points -- \n",nlines);
