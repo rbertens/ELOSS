@@ -23,16 +23,16 @@ void plot_event(const char* filename = "vishnu_profile.csv", const char* outputf
    TH2D* jewel[15];
    TH2D* hydro[15];
    for(int i = 0; i < 15; i++) {
-      jewel[i] = new TH2D(Form("neff_jewel_tau=%i", i), Form("N_{eff, jewel}, #tau = %i", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
-      hydro[i] = new TH2D(Form("neff_hydro_tau=%i", i), Form("N_{eff, hydro}, #tau = %i", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
+      jewel[i] = new TH2D(Form("neff_jewel_tau=%i", i), Form("N_{eff, jewel}, #tau = %i (fm/#it{c})", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
+      hydro[i] = new TH2D(Form("neff_hydro_tau=%i", i), Form("N_{eff, hydro}, #tau = %i (fm/#it{c})", i), 101, -10.1, 10.1, 101, -10.1, 10.1);
 
       jewel[i]->GetXaxis()->SetTitle("x (fm)");
       jewel[i]->GetYaxis()->SetTitle("y (fm)");
-//      jewel[i]->GetZaxis()->SetRangeUser(0., 15.);
+      jewel[i]->GetZaxis()->SetRangeUser(0., 1.5);
 
       hydro[i]->GetXaxis()->SetTitle("x (fm)");
       hydro[i]->GetYaxis()->SetTitle("y (fm)");
-//      hydro[i]->GetZaxis()->SetRangeUser(0., 15.);
+      hydro[i]->GetZaxis()->SetRangeUser(0., 1.5);
 
    }
 
@@ -55,9 +55,23 @@ void plot_event(const char* filename = "vishnu_profile.csv", const char* outputf
       }
       nlines++;
    }
+
    printf("\n .. digested  %d points -- \n",nlines);
 
    in.close();
+
+   TCanvas* can = new TCanvas("evolution", "evolution");
+   can->Divide(5,2);
+   gStyle->SetOptStat(0);
+   for(int i = 1; i < 6; i++) {
+       can->cd(i);
+       gPad->SetLogz();
+       gStyle->SetPalette(62);
+       jewel[i]->DrawCopy("colz");
+       can->cd(i+5);
+       gPad->SetLogz();
+       hydro[i]->DrawCopy("colz");
+   }
 
    f->Write();
    printf("\n -- %s has been closed, have fun \n\n", outputfile);
