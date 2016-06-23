@@ -241,7 +241,7 @@ C--calculate T_A(x,y)
 C--calculate geometrical cross section
       CALL CALCXSECTION
 C-- read the vishnu data (for now hardcoded filename)
-      CALL VISHNUINIT(5)
+C      CALL VISHNUINIT(5)
       END
 
 
@@ -558,7 +558,8 @@ C--       GETTEMP from hydro
 
       END
  
-C -- REDMER is this the wiggly N ? 
+C -- returns the original Neff from jewel
+C    used as a reference
       DOUBLE PRECISION FUNCTION GETNEFFJEWEL(X3,Y3,Z3,T3)
       IMPLICIT NONE
       COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
@@ -570,8 +571,6 @@ C -- REDMER is this the wiggly N ?
      &SIGMANN
       INTEGER A
       LOGICAL WOODSSAXON
-      COMMON/vishlog/vishnuid
-      INTEGER vishnuid
 C--   local variables
       DOUBLE PRECISION X3,Y3,Z3,T3,PI,GETTEMP,tau,cosheta
       DATA PI/3.141592653589793d0/

@@ -67,10 +67,10 @@ void plot_event(const char* filename = "vishnu_profile.csv", const char* outputf
        can->cd(i);
        gPad->SetLogz();
        gStyle->SetPalette(62);
-       jewel[i]->DrawCopy("colz");
+       jewel[2*i-1]->DrawCopy("colz");
        can->cd(i+5);
        gPad->SetLogz();
-       hydro[i]->DrawCopy("colz");
+       hydro[2*i-1]->DrawCopy("colz");
    }
 
    f->Write();

@@ -26,9 +26,6 @@ void vishnu_reader(const char* filename = "vishnu.cvs", const char* outputfile =
    char header[256];
    in.getline(header,256);
    printf("\n .. digesting header ..  \n     - %s\n",header);
-   in.getline(header,256);
-   printf("     - %s\n",header);
-
 
    printf("\n .. and now for the actual work .. \n");
    while (true) {
