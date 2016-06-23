@@ -375,7 +375,7 @@
 
       ! Read Attribute for group "Event"
       Call readHydrogridInfo(group_id)
-      Call printHydrogridInfo()
+      Call printHydrogridInfo(group_id)
 
       ! Read datasets from the file
       Call readHydroinfoBuffered_initialization(bufferSize_in)
@@ -449,13 +449,15 @@
 !-----------------------------------------------------------------------
 
 !***********************************************************************
-      Subroutine printHydrogridInfo()
+      Subroutine printHydrogridInfo(group_id)
+      USE HDF5
       Implicit none
       
       CHARACTER(LEN=10) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname ! Group name
 
       Common /fileInfo/ hydroFileH5name, groupEventname
+      INTEGER(HID_T) :: group_id      ! Group identifier
 
       Integer :: hydroGrid_XL, hydroGrid_XH, hydroGrid_YL, hydroGrid_YH
       Double precision :: hydroGrid_X0, hydroGrid_Y0
@@ -479,6 +481,8 @@
       write(*,'(A)')"--------------- hydro grid info ------------------"
       write(*,'(A)')"--------------------------------------------------"
       write(*,'(A, A)')"Filename : ", hydroFileH5name
+      write(*,'(A, A)')"Groupname : ", groupEventname
+      write(*,*)"GroupIdentifier : ", group_id
       write(*,'(A, I5)') "XL = ", hydroGrid_XL
       write(*,'(A, I5)') "XH = ", hydroGrid_XH
       write(*,'(A, F5.3, A)') "DX = ", hydroGrid_DX, " fm"
