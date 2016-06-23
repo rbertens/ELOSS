@@ -375,7 +375,7 @@
 
       ! Read Attribute for group "Event"
       Call readHydrogridInfo(group_id)
-      Call printHydrogridInfo(group_id)
+      Call printHydrogridInfo()
 
       ! Read datasets from the file
       Call readHydroinfoBuffered_initialization(bufferSize_in)
@@ -449,15 +449,12 @@
 !-----------------------------------------------------------------------
 
 !***********************************************************************
-      Subroutine printHydrogridInfo(group_id)
+      Subroutine printHydrogridInfo()
       USE HDF5
       Implicit none
       
       CHARACTER(LEN=10) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname ! Group name
-
-      Common /fileInfo/ hydroFileH5name, groupEventname
-      INTEGER(HID_T) :: group_id      ! Group identifier
 
       Integer :: hydroGrid_XL, hydroGrid_XH, hydroGrid_YL, hydroGrid_YH
       Double precision :: hydroGrid_X0, hydroGrid_Y0
@@ -481,8 +478,6 @@
       write(*,'(A)')"--------------- hydro grid info ------------------"
       write(*,'(A)')"--------------------------------------------------"
       write(*,'(A, A)')"Filename : ", hydroFileH5name
-      write(*,'(A, A)')"Groupname : ", groupEventname
-      write(*,*)"GroupIdentifier : ", group_id
       write(*,'(A, I5)') "XL = ", hydroGrid_XL
       write(*,'(A, I5)') "XH = ", hydroGrid_XH
       write(*,'(A, F5.3, A)') "DX = ", hydroGrid_DX, " fm"
@@ -552,6 +547,59 @@
       ! close an attribute
       Call h5aclose_f(attr_id, error)
 
+      end
+!-----------------------------------------------------------------------
+      Subroutine deallocateHydroEvent()
+      Implicit None
+      
+      Integer :: hydroGrid_XL, hydroGrid_XH, hydroGrid_YL, hydroGrid_YH
+      Double precision :: hydroGrid_X0, hydroGrid_Y0
+      Double precision :: hydroGrid_DX, hydroGrid_DY
+      Double precision :: hydroGrid_Tau0, hydroGrid_dTau
+      Double precision :: hydroGrid_Taumax
+      Integer :: hydroGrid_numOfframes
+      Common /hydroGridinfo/ hydroGrid_XL, hydroGrid_XH, 
+     &                       hydroGrid_X0, hydroGrid_DX, 
+     &                       hydroGrid_YL, hydroGrid_YH, 
+     &                       hydroGrid_Y0, hydroGrid_DY, 
+     &                       hydroGrid_Tau0, hydroGrid_dTau,
+     &                       hydroGrid_Taumax,
+     &                       hydroGrid_numOfframes
+
+      Integer:: bufferSize
+      Integer:: bufferSize_in
+
+      ! the last index is the buffer "layer" index that goes from 1 to bufferSize
+      Double Precision, Pointer::
+     & eM(:,:,:), PM(:,:,:), sM(:,:,:), TM(:,:,:), vxM(:,:,:), 
+     & vyM(:,:,:),
+     & pi00M(:,:,:), pi01M(:,:,:), pi02M(:,:,:), pi03M(:,:,:), 
+     & pi11M(:,:,:), pi12M(:,:,:), pi13M(:,:,:), pi22M(:,:,:),
+     & pi23M(:,:,:), pi33M(:,:,:), BulkPiM(:,:,:)
+
+      Common /bufferedData/ bufferSize, 
+     &  eM, PM, sM, TM, vxM, vyM, 
+     &  pi00M, pi01M, pi02M, pi03M, pi11M, pi12M, pi13M, pi22M,
+     &  pi23M, pi33M, BulkPiM
+
+      bufferSize = bufferSize_in
+      deAllocate(eM)
+      deAllocate(PM)
+      deAllocate(sM)
+      deAllocate(TM)
+      deAllocate(vxM)
+      deAllocate(vyM)
+      deAllocate(pi00M)
+      deAllocate(pi01M)
+      deAllocate(pi02M)
+      deAllocate(pi03M)
+      deAllocate(pi11M)
+      deAllocate(pi12M)
+      deAllocate(pi13M)
+      deAllocate(pi22M)
+      deAllocate(pi23M)
+      deAllocate(pi33M)
+      deAllocate(BulkPiM)
       end
 !-----------------------------------------------------------------------
 

@@ -53,6 +53,27 @@ C++ that you include the source code of that other code when and as ++
 C++ the GNU GPL requires distribution of source code.               ++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+C-- the hydro event is dynamiclaly allocated
+C   in the reader, but the reader natively
+C   does not do memory mamangement, so
+C   we clear the memory ourselves
+      SUBROUTINE CLEARHYDROMEMORY()
+      USE HDF5
+      CALL DEALLOCATEHYDROEVENT()
+      END
+
+      SUBROUTINE VISHNUINITQUIET()
+C-- here we open the hydro file to extract the info
+C   and buffer it
+C   should be called once at start of medium
+C   initialization
+      USE HDF5
+      
+      print *, "Switching to new hydro file ... "
+      CALL readHydroFiles_initialEZ("JetData.h5")
+      END
+
+
 
       SUBROUTINE VISHNUINIT(id)
 C-- here we open the hydro file to extract the info
@@ -65,6 +86,8 @@ C   initialization
       INTEGER id
       DOUBLE PRECISION  X,Y,T,GETNEFFQUIET
       DOUBLE PRECISION GETNEFFJEWEL
+
+C-- todo chose filename based on iterator
       CALL readHydroFiles_initialEZ("JetData.h5")
       vishnuid=id
       WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
@@ -72,8 +95,8 @@ C   initialization
 C-- we also want to just go through the x y profile of the
 C   medium, to get a sense of its makeup
 
-      OPEN(unit=6,file='vishnu_profile.csv',status='unknown')
-      write(6,'(A)')'scanning hydro cells - x y t neff neffjewel'
+      OPEN(unit=7,file='vishnu_profile.csv',status='unknown')
+      write(7,'(A)')'scanning hydro cells - x y t neff neffjewel'
 
 C-- make a nested loop over x and y, and store the neff and
 C-- jewel neff in a grid of cell width .1
@@ -82,7 +105,7 @@ C-- jewel neff in a grid of cell width .1
           DO I=1,201,1
               Y = -10.
               DO J=1,202,1
-                     write(6,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
+                     write(7,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
      &GETNEFFJEWEL(X,Y,0d0,T)
                      T = K/1.
                   Y = Y + .1
@@ -91,7 +114,7 @@ C-- jewel neff in a grid of cell width .1
           END DO
       END DO
 C--   close file for writing
-      CLOSE(6,status='keep')
+      CLOSE(7,status='keep')
 
       END
 

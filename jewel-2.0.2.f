@@ -747,6 +747,7 @@ C--Variables local to this program
         MV(I,5)=0.d0
  91    CONTINUE
 
+       CALL VISHNUINITQUIET
        CALL MEDNEXTEVT
 
 C--initialisation with matrix element	 
@@ -1090,6 +1091,9 @@ C--write message to log-file
          ENDIF
 	call flush(logfid)
         call flush(vishnuid)
+C-- redmer clear out the allocated memory
+C   for the hydro buffer
+        call CLEARHYDROMEMORY()        
 	end
 
 
