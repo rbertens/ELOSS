@@ -6,7 +6,7 @@
       Use HDF5
       Implicit none
 
-      CHARACTER(LEN=20) :: H5hydroFilename = "results/JetData.h5" ! File name
+      CHARACTER(LEN=120) :: H5hydroFilename = "results/JetData.h5" ! File name
       CHARACTER(LEN=8) :: groupname = "/Event" ! Group name
       Common /dataFile/ H5hydroFilename, groupname
 
@@ -180,7 +180,7 @@
       Use HDF5
       Implicit none
 
-      CHARACTER(LEN=20) :: H5hydroFilename ! File name
+      CHARACTER(LEN=120) :: H5hydroFilename ! File name
       CHARACTER(LEN=8) :: groupname        ! Group name
       CHARACTER(LEN=10) :: frameName       ! Group frame name
       Character(Len=4) :: frame_id_string
@@ -335,7 +335,7 @@
 !***********************************************************************
       Subroutine readHydroFiles_initialEZ(H5hydroFilename_in)
       Implicit none
-      CHARACTER(LEN=10) :: H5hydroFilename_in
+      CHARACTER(LEN=120) :: H5hydroFilename_in
       Call readHydroFiles_initial(H5hydroFilename_in, 0, 500)
       end
 !-----------------------------------------------------------------------
@@ -346,8 +346,8 @@
       Use HDF5
       Implicit none
 
-      CHARACTER(LEN=10) :: H5hydroFilename_in
-      CHARACTER(LEN=10) :: hydroFileH5name ! File name
+      CHARACTER(LEN=120) :: H5hydroFilename_in
+      CHARACTER(LEN=120) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname = "/Event" ! Group name
 
       Common /fileInfo/ hydroFileH5name, groupEventname
@@ -397,7 +397,7 @@
       Use HDF5
       Implicit none
 
-      CHARACTER(LEN=10) :: hydroFileH5name ! File name
+      CHARACTER(LEN=120) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname ! Group name
 
       Common /fileInfo/ hydroFileH5name, groupEventname
@@ -453,7 +453,7 @@
       USE HDF5
       Implicit none
       
-      CHARACTER(LEN=10) :: hydroFileH5name ! File name
+      CHARACTER(LEN=120) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname ! Group name
 
       Integer :: hydroGrid_XL, hydroGrid_XH, hydroGrid_YL, hydroGrid_YH
@@ -477,7 +477,7 @@
       write(*,'(A)')"--------------------------------------------------"
       write(*,'(A)')"--------------- hydro grid info ------------------"
       write(*,'(A)')"--------------------------------------------------"
-      write(*,'(A, A)')"Filename : ", hydroFileH5name
+      write(*,'(A, A)')"Filename : ", TRIM(hydroFileH5name)
       write(*,'(A, I5)') "XL = ", hydroGrid_XL
       write(*,'(A, I5)') "XH = ", hydroGrid_XH
       write(*,'(A, F5.3, A)') "DX = ", hydroGrid_DX, " fm"
@@ -681,7 +681,7 @@
       Use HDF5
       Implicit None
 
-      CHARACTER(LEN=10) :: hydroFileH5name ! File name
+      CHARACTER(LEN=120) :: hydroFileH5name ! File name
       CHARACTER(LEN=8) :: groupEventname ! Group name
       Common /fileInfo/ hydroFileH5name, groupEventname
       
