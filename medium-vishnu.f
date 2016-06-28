@@ -62,15 +62,34 @@ C   we clear the memory ourselves
       CALL DEALLOCATEHYDROEVENT()
       END
 
-      SUBROUTINE VISHNUINITQUIET()
-C-- here we open the hydro file to extract the info
-C   and buffer it
-C   should be called once at start of medium
-C   initialization
+      SUBROUTINE VISHNUNEXTEVT(j)
       USE HDF5
-      
-      print *, "Switching to new hydro file ... "
-      CALL readHydroFiles_initialEZ("JetData.h5")
+C -- fairly clumsy function to open hydro events
+C    will crash at end of file to avoid sampling
+C    the hydro events more than once
+C    reads line by line from the  input file
+
+      CHARACTER(LEN=120) :: FILEITERATOR
+      CHARACTER(LEN=120) :: FILENAME
+      INTEGER :: I, J
+      OPEN(UNIT=10, FILE='vishnu_events.dat', STATUS ='OLD')
+      DO I=1,1000
+C -- this loop step seems absurd, but it protects against having 
+C    problems with filename N+1 has less characters
+C    than filename N
+          IF(J.NE.I) THEN 
+              READ(10,'(A)') FILEITERATOR
+              write(3,*)'already played with event ', FILEITERATOR, I, J
+          ELSE IF (J.EQ.I) THEN
+              READ(10,'(A)') FILENAME
+              write(3,*)'but this one seems fresh ', FILENAME, I, J
+              EXIT
+          ENDIF
+      END DO
+      write(3,*)'Reading HYDRO event from ',FILENAME
+C      character(*80)
+      CALL readHydroFiles_initialEZ(FILENAME)
+      CLOSE(10)
       END
 
 
@@ -78,17 +97,22 @@ C   initialization
       SUBROUTINE VISHNUINIT(id)
 C-- here we open the hydro file to extract the info
 C   and buffer it
-C   should be called once at start of medium
+C   called once at start of medium
 C   initialization
+C   but all this does is make a nice picture of a hydro evolution
+C   which is then not used anymore
       USE HDF5
       COMMON/vishlog/vishnuid
       INTEGER vishnuid
       INTEGER id
       DOUBLE PRECISION  X,Y,T,GETNEFFQUIET
       DOUBLE PRECISION GETNEFFJEWEL
-
-C-- todo chose filename based on iterator
-      CALL readHydroFiles_initialEZ("JetData.h5")
+      CHARACTER(LEN=120) :: FILENAME
+      OPEN(UNIT=10, FILE='vishnu_events.dat', STATUS ='OLD')
+      READ(10,'(A)') FILENAME
+      write(3,*)'Reading test HYDRO event from ',FILENAME
+      CALL readHydroFiles_initialEZ(TRIM(FILENAME))
+      CLOSE(10)
       vishnuid=id
       WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
       
@@ -100,18 +124,19 @@ C   medium, to get a sense of its makeup
 
 C-- make a nested loop over x and y, and store the neff and
 C-- jewel neff in a grid of cell width .1
-      DO K = 1,15,1
+      T = 0.6
+      DO K = 1,110,1
           X = -10.
           DO I=1,201,1
               Y = -10.
               DO J=1,202,1
                      write(7,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
      &GETNEFFJEWEL(X,Y,0d0,T)
-                     T = K/1.
                   Y = Y + .1
               END DO
               X = X + .1
           END DO
+          T = T + .1
       END DO
 C--   close file for writing
       CLOSE(7,status='keep')
@@ -267,8 +292,6 @@ C-- read the vishnu data (for now hardcoded filename)
 C      CALL VISHNUINIT(5)
       END
 
-
-
       SUBROUTINE MEDNEXTEVT
       IMPLICIT NONE
 C--medium parameters
@@ -305,6 +328,7 @@ C--pick an impact parameter
      &      +b1*(r-cross(i+1,3)/cross(200,3)))/
      &	(cross(i,3)/cross(200,3)-cross(i+1,3)/cross(200,3))
       centr = r;
+
       END
 
       double precision function getcentrality()
@@ -313,6 +337,7 @@ C--pick an impact parameter
       INTEGER NF
       DOUBLE PRECISION CENTRMIN,CENTRMAX,BREAL,CENTR,RAU
       getcentrality=centr
+
       end
 
 
@@ -342,15 +367,15 @@ C--local variables
       Y=YVAL
       END
 
-	SUBROUTINE SETB(BVAL)
-	IMPLICIT NONE
+C	SUBROUTINE SETB(BVAL)
+C	IMPLICIT NONE
 C--medium parameters
-      COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
-      INTEGER NF
-      DOUBLE PRECISION CENTRMIN,CENTRMAX,BREAL,CENTR,RAU
-	DOUBLE PRECISION BVAL
-	BREAL=BVAL
-	END
+C      COMMON/MEDPARAM/CENTRMIN,CENTRMAX,BREAL,CENTR,RAU,NF
+C      INTEGER NF
+C      DOUBLE PRECISION CENTRMIN,CENTRMAX,BREAL,CENTR,RAU
+C	DOUBLE PRECISION BVAL
+C	BREAL=BVAL
+C	END
 
 
 
@@ -571,14 +596,12 @@ C--       GETTEMP from hydro
      &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
 
 	getneff = getneff/cosheta
-      GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
-     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
-      GETNEFFJEWEL = GETNEFFJEWEL/cosheta
-
-      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
-     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
-     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
-
+C      GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
+C     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+C      GETNEFFJEWEL = GETNEFFJEWEL/cosheta
+C      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
+C     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
+C     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
       END
  
 C -- returns the original Neff from jewel

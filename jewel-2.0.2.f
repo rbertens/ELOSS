@@ -448,8 +448,8 @@ C--default settings
 
 C--initialize medium
       CALL MEDINIT(FILEMED,logfid,etamax)
+      CALL MEDNEXTEVT()
       CALL VISHNUINIT(vishnuid)
-      CALL MEDNEXTEVT
 
 	OPEN(unit=HPMCFID,file=HEPMCFILE,status='unknown')
 	WRITE(HPMCFID,*)
@@ -747,7 +747,7 @@ C--Variables local to this program
         MV(I,5)=0.d0
  91    CONTINUE
 
-       CALL VISHNUINITQUIET
+       CALL VISHNUNEXTEVT(j)
        CALL MEDNEXTEVT
 
 C--initialisation with matrix element	 
