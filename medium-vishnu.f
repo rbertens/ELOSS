@@ -596,12 +596,12 @@ C--       GETTEMP from hydro
      &     *GETHYDROTEMP(X3,Y3,Z3,T3)**3/PI**2
 
 	getneff = getneff/cosheta
-C      GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
-C     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
-C      GETNEFFJEWEL = GETNEFFJEWEL/cosheta
-C      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
-C     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
-C     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
+      GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
+     &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
+      GETNEFFJEWEL = GETNEFFJEWEL/cosheta
+      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
+     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
+     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
       END
  
 C -- returns the original Neff from jewel
@@ -1087,3 +1087,43 @@ C-- return value is variable that has the function name
       GETHYDROENTROPY=s
 
       END
+
+
+
+      DOUBLE PRECISION FUNCTION GETPARTICIPANTPLANE()
+C -- get the participant plane from the
+C -- hydro event that is currently in the 
+C -- event buffer
+      USE HDF5 ! load the HDF5 module, necessary to read hydro file
+      IMPLICIT NONE
+      DOUBLE PRECISION X, Y, Z, T, GETNEFFQUIET, qy, qx, phi
+      INTEGER :: I, J
+      qy = 0
+      qx = 0 
+      T = 6
+      X = -10.
+      DO I=1,201,1
+          Y = -10.
+          DO J=1,202,1
+C -- here extract azimuth (polar coordinates) and
+C -- increment the q vectors                
+                 IF((X.GT.0) .AND. (Y.GT.0)) THEN 
+                     phi = ACOS(X/10.)
+                 ELSE IF ((X.LT.0) .AND. (Y.GT.0)) THEN
+                     PHI = ACOS(X/10.)
+                 ELSE IF ((X.LT.0) .AND. (Y.LT.0)) THEN
+                     PHI = ACOS(X/10.) + 2.*ATAN(1.)
+                 ELSE IF ((X.GT.0) .AND. (Y.LT.0)) THEN
+                     PHI = ACOS(X/10.) + 6.*ATAN(1.) 
+                 ENDIF
+              QY = QY + GETNEFFQUIET(X,Y,0d0,T) * SIN(2.*PHI)
+              QX = QX + GETNEFFQUIET(X,Y,0d0,T) * COS(2.*PHI)
+              Y = Y + .1
+          END DO
+          X = X + .1
+      END DO
+      GETPARTICIPANTPLANE = ATAN(QY,QX)/2.
+
+
+      END
+
