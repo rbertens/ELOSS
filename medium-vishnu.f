@@ -1096,7 +1096,7 @@ C -- hydro event that is currently in the
 C -- event buffer
       USE HDF5 ! load the HDF5 module, necessary to read hydro file
       IMPLICIT NONE
-      DOUBLE PRECISION X, Y, Z, T, GETNEFFQUIET, qy, qx, phi
+      DOUBLE PRECISION X, Y, Z, T, GETNEFFQUIET, qy, qx, phi, r
       INTEGER :: I, J
       qy = 0
       qx = 0 
@@ -1107,22 +1107,15 @@ C -- event buffer
           DO J=1,202,1
 C -- here extract azimuth (polar coordinates) and
 C -- increment the q vectors                
-                 IF((X.GT.0) .AND. (Y.GT.0)) THEN 
-                     phi = ACOS(X/10.)
-                 ELSE IF ((X.LT.0) .AND. (Y.GT.0)) THEN
-                     PHI = ACOS(X/10.)
-                 ELSE IF ((X.LT.0) .AND. (Y.LT.0)) THEN
-                     PHI = ACOS(X/10.) + 2.*ATAN(1.)
-                 ELSE IF ((X.GT.0) .AND. (Y.LT.0)) THEN
-                     PHI = ACOS(X/10.) + 6.*ATAN(1.) 
-                 ENDIF
-              QY = QY + GETNEFFQUIET(X,Y,0d0,T) * SIN(2.*PHI)
-              QX = QX + GETNEFFQUIET(X,Y,0d0,T) * COS(2.*PHI)
+              PHI = ATAN2(Y,X)
+              r = x*x + y*y
+              QY = QY + r*GETNEFFQUIET(X,Y,0d0,T) * SIN(2.*PHI)
+              QX = QX + r*GETNEFFQUIET(X,Y,0d0,T) * COS(2.*PHI)
               Y = Y + .1
           END DO
           X = X + .1
       END DO
-      GETPARTICIPANTPLANE = ATAN(QY,QX)/2.
+      GETPARTICIPANTPLANE = ATAN2(QY,QX)/2.
 
 
       END
