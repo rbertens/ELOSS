@@ -6102,6 +6102,22 @@ C--short output
 
 	  NFIRST=NFIRST
 
+
+what you found out: par(10) is the event weight
+          not so staightforward to extend this array
+          most likely use another variable (find a suitable double) to store pp orientation
+          or update the hepmc reader class to a neweer
+          version which cna actualy read out the hevay ion
+          info properly
+
+
+
+
+
+
+
+
+
 	  WRITE(J,5000)'E ',EVNUM,-1,0.d0,0.d0,0.d0,0,0,1,1,2,0,1,
      &PARI(10)
 	  WRITE(J,'(A2,I2,A5)')'N ',1,'"0"' 
