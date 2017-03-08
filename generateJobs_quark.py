@@ -124,6 +124,7 @@ for i in range(1, numberOfJobs+1):
 #$ -S /bin/bash
 #$ -cwd
 # set the correct python path
+# TODO for newton: do not fix the path, but load the correct modules
 export PATH=/home/staff/0348082/Python-2.7.11:/home/staff/0348082/FRANKENJEWEL/VISHNU/inst_blup/bin:$PATH
 export LD_LIBRARY_PATH=/home/staff/0348082/Python-2.7.11/build/lib.linux-x86_64-2.7:/home/staff/0348082/JEWEL/LHAPDF/lib:/home/staff/0348082/FRANKENJEWEL/VISHNU/inst_blup/lib:$LD_LIBRARY_PATH
 cd %s
@@ -163,6 +164,7 @@ if compressResultsFolderAnswer == "yes":
 #$ -S /bin/bash
 #$ -cwd
 # set the correct python path
+# TODO for newton: do not fix the path, but load the correct modules
 export PATH=/home/staff/0348082/Python-2.7.11:/home/staff/0348082/FRANKENJEWEL/VISHNU/inst_blup/bin:$PATH
 export LD_LIBRARY_PATH=/home/staff/0348082/Python-2.7.11/build/lib.linux-x86_64-2.7:/home/staff/0348082/JEWEL/LHAPDF/lib:/home/staff/0348082/FRANKENJEWEL/VISHNU/inst_blup/lib:$LD_LIBRARY_PATH
 cd %s
