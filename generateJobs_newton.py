@@ -127,6 +127,11 @@ export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin
 export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
 cd %s
 (cd %s
+module load gsl/1.15
+module load numpy/1.11.0-python2.7.3
+export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
+export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+
 ulimit -n 1000
 python ./SequentialEventDriver_shell.py %d 1> RunRecord.txt 2> ErrorRecord.txt
 cp RunRecord.txt ErrorRecord.txt ../finalResults/
@@ -138,6 +143,11 @@ mv ./finalResults %s/job-%d
         open(path.join(targetWorkingFolder, "job-%d.pbs" % i), "a").write(
 """
 (cd %s
+module load gsl/1.15
+module load numpy/1.11.0-python2.7.3
+export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
+export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+
 zip -r -m -q job-%d.zip job-%d
 )
 """ % (resultsFolder, i, i)
@@ -165,6 +175,11 @@ export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin
 export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
 cd %s
 (cd %s
+module load gsl/1.15
+module load numpy/1.11.0-python2.7.3
+export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
+export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+
 python autoZippedResultsCombiner.py %s %d "job-(\d*).zip" 60 1> WatcherReport.txt
 mv WatcherReport.txt %s
 )
