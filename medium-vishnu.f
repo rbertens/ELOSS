@@ -73,13 +73,13 @@ C    reads line by line from the  input file
       CHARACTER(LEN=120) :: FILENAME
       INTEGER :: I, J
       OPEN(UNIT=10, FILE='vishnu_events.dat', STATUS ='OLD')
-      DO I=1,1000
+      DO I=1,10000
 C -- this loop step seems absurd, but it protects against having 
 C    problems with filename N+1 has less characters
 C    than filename N
           IF(J.NE.I) THEN 
               READ(10,'(A)') FILEITERATOR
-              write(3,*)'already played with event ', FILEITERATOR, I, J
+C              write(3,*)'already played with event ', FILEITERATOR, I, J
           ELSE IF (J.EQ.I) THEN
               READ(10,'(A)') FILENAME
               write(3,*)'but this one seems fresh ', FILENAME, I, J
@@ -113,33 +113,33 @@ C   which is then not used anymore
       write(3,*)'Reading test HYDRO event from ',FILENAME
       CALL readHydroFiles_initialEZ(TRIM(FILENAME))
       CLOSE(10)
-      vishnuid=id
-      WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
-      
+C      vishnuid=id
+C      WRITE(vishnuid,'(A)')'INITIALIZED VISHNU HYDRO'
+C      
 C-- we also want to just go through the x y profile of the
 C   medium, to get a sense of its makeup
-
-      OPEN(unit=7,file='vishnu_profile.csv',status='unknown')
-      write(7,'(A)')'scanning hydro cells - x y t neff neffjewel'
+C
+C      OPEN(unit=7,file='vishnu_profile.csv',status='unknown')
+C      write(7,'(A)')'scanning hydro cells - x y t neff neffjewel'
 
 C-- make a nested loop over x and y, and store the neff and
 C-- jewel neff in a grid of cell width .1
-      T = 0.6
-      DO K = 1,110,1
-          X = -10.
-          DO I=1,201,1
-              Y = -10.
-              DO J=1,202,1
-                     write(7,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
-     &GETNEFFJEWEL(X,Y,0d0,T)
-                  Y = Y + .1
-              END DO
-              X = X + .1
-          END DO
-          T = T + .1
-      END DO
+C      T = 0.6
+C      DO K = 1,110,1
+C          X = -10.
+C          DO I=1,201,1
+C              Y = -10.
+C              DO J=1,202,1
+C                     write(7,*)X,Y,T,GETNEFFQUIET(X,Y,0d0,T),
+C     &GETNEFFJEWEL(X,Y,0d0,T)
+C                  Y = Y + .1
+C              END DO
+C              X = X + .1
+C          END DO
+C          T = T + .1
+C      END DO
 C--   close file for writing
-      CLOSE(7,status='keep')
+C      CLOSE(7,status='keep')
 
       END
 
@@ -599,9 +599,9 @@ C--       GETTEMP from hydro
       GETNEFFJEWEL = (2.*6.*NF*D3*2./3. + 16.*ZETA3*3./2.)
      &     *GETTEMP(X3,Y3,Z3,T3)**3/PI**2
       GETNEFFJEWEL = GETNEFFJEWEL/cosheta
-      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
-     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
-     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
+C      write(vishnuid,*)X3,Y3,Z3,T3,GETTEMP(X3,Y3,Z3,T3),
+C     &GETHYDROTEMP(X3,Y3,Z3,T3),GETHYDROEPSILON(X3,Y3,Z3,T3),
+C     &GETHYDROENTROPY(X3,Y3,Z3,T3),GETNEFF,GETNEFFJEWEL
       END
  
 C -- returns the original Neff from jewel
