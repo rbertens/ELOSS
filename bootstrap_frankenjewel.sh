@@ -44,7 +44,7 @@ do
     echo "#$ -N FJ_AUTOLAUNCHER" >> fj_autoscript_dont_change.sh    
     echo "#$ -q medium*" >> fj_autoscript_dont_change.sh    
     echo "#$ -S /bin/bash" >> fj_autoscript_dont_change.sh    
-    echo "#$ -cw" >> fj_autoscript_dont_change.sh    
+    echo "#$ -cwd" >> fj_autoscript_dont_change.sh    
 
     # prepare shell
     echo "module load gsl/1.15" >> fj_autoscript_dont_change.sh    
