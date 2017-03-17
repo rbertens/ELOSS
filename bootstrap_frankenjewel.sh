@@ -55,8 +55,8 @@ do
     echo "/data/rhip/alice/rbertens/JEWEL/FRANKENJEWEL/source/jewel-2.0.2-vishnu frankenparams.dat" >> fj_autoscript_dont_change.sh    
 
     # cleanup after jobs
-    rm splitint.dat
-    rm xsecs.dat
+    echo "rm splitint.dat" >> fj_autoscript_dont_change.sh  
+    echo "rm xsecs.dat" >> fj_autoscript_dont_change.sh  
 
     # change permissions
     chmod +x fj_autoscript_dont_change.sh
