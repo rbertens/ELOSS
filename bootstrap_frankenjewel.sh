@@ -54,6 +54,10 @@ do
     echo "export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH" >> fj_autoscript_dont_change.sh    
     echo "/data/rhip/alice/rbertens/JEWEL/FRANKENJEWEL/source/jewel-2.0.2-vishnu frankenparams.dat" >> fj_autoscript_dont_change.sh    
 
+    # cleanup after jobs
+    rm splitint.dat
+    rm xsecs.dat
+
     # change permissions
     chmod +x fj_autoscript_dont_change.sh
 
