@@ -1,0 +1,11 @@
+*~
+*.o
+*.d
+*.so
+*.root
+*.xml
+*.dat
+*.tar
+*.cvs
+*.e*
+*.o*
