@@ -115,24 +115,15 @@ for i in range(1, numberOfJobs+1):
     copytree(ebeNodeFolder, targetWorkingFolder)
     open(path.join(targetWorkingFolder, "job-%d.pbs" % i), "w").write(
 """
-#!/bin/sh
-#
-#$ -N FRANKENJEWEL_%d
-#$ -q medium*
-#$ -S /bin/bash
-#$ -cwd
-module load gsl/1.15
-module load numpy/1.11.0-python2.7.3
-export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
-export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+#PBS -S /bin/bash
+#PBS -N FRANKENJEWEL_%d
+#PBS -l walltime=05:00:00
+module load gsl
+module load hdf5
 cd %s
 (cd %s
-module load gsl/1.15
-module load numpy/1.11.0-python2.7.3
-export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
-export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
-
-ulimit -n 1000
+module load gsl
+module load hdf5
 python ./SequentialEventDriver_shell.py %d 1> RunRecord.txt 2> ErrorRecord.txt
 cp RunRecord.txt ErrorRecord.txt ../finalResults/
 )
@@ -143,10 +134,8 @@ mv ./finalResults %s/job-%d
         open(path.join(targetWorkingFolder, "job-%d.pbs" % i), "a").write(
 """
 (cd %s
-module load gsl/1.15
-module load numpy/1.11.0-python2.7.3
-export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
-export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+module load gsl
+module load hdf5
 
 zip -r -m -q job-%d.zip job-%d
 )
@@ -163,22 +152,15 @@ if compressResultsFolderAnswer == "yes":
     copytree(utilitiesFolder, path.join(watcherDirectory, utilitiesFolder))
     open(path.join(watcherDirectory, "watcher.pbs"), "w").write(
 """
-#!/bin/bash
-#$ -N FJ_WATCHER_IS_WATCHING_YOU
-#$ -q medium*
-#$ -S /bin/bash
-#$ -cwd
+#PBS -S /bin/bash
+#PBS -FJ_WATCHER_IS_WATCHING_YOU
 # load modules on the node
-module load gsl/1.15
-module load numpy/1.11.0-python2.7.3
-export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
-export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+module load gsl
+module load hdf5
 cd %s
 (cd %s
-module load gsl/1.15
-module load numpy/1.11.0-python2.7.3
-export PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/bin:$PATH
-export LD_LIBRARY_PATH=/data/rhip/alice/rbertens/JEWEL/CHUN_SHEN/again/hdf5-1.8.17/hdf5/lib:$LD_LIBRARY_PATH
+module load gsl
+module load hdf5
 
 python autoZippedResultsCombiner.py %s %d "job-(\d*).zip" 60 1> WatcherReport.txt
 mv WatcherReport.txt %s
